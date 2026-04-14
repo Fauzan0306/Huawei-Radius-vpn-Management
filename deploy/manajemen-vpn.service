@@ -1,0 +1,18 @@
+[Unit]
+Description=VPN Management Admin Panel
+After=network.target mariadb.service
+Wants=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/var/www/html/manajemen-vpn
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/npm start
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
