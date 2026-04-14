@@ -4,6 +4,7 @@ Simple admin panel for managing FreeRADIUS VPN users stored in `radcheck` and mo
 
 ## Documentation
 
+- Installation and setup guide: [`docs/instalasi-dan-setup.md`](./docs/instalasi-dan-setup.md)
 - Detailed operating guide: [`docs/panduan-operasional.md`](./docs/panduan-operasional.md)
 - Architecture overview: [`docs/arsitektur-proyek.md`](./docs/arsitektur-proyek.md)
 - Environment reference: [`docs/konfigurasi-env.md`](./docs/konfigurasi-env.md)
@@ -28,14 +29,43 @@ Simple admin panel for managing FreeRADIUS VPN users stored in `radcheck` and mo
 - Built-in Huawei UDP syslog listener
 - Internal ingest API for Huawei SSL VPN login and logout events
 
-## Setup
+## Requirements
+
+- Node.js 18+ and npm
+- MariaDB
+- FreeRADIUS with SQL module
+- Standard RADIUS SQL tables such as `radcheck`, `radreply`, and `radacct`
+- Huawei USG6555F syslog access if using Huawei session mode
+
+## Required Database Tables
+
+This project is not a standalone VPN backend. It expects an existing RADIUS SQL database.
+
+Minimum tables used by the app:
+
+- `radcheck`
+- `radreply`
+- `radacct`
+- `vpn_sessions` in Huawei mode
+
+Notes:
+
+- `radcheck`, `radreply`, and `radacct` normally come from the default FreeRADIUS SQL schema.
+- `vpn_sessions` is created automatically by the application when Huawei session mode is active.
+- `Filter-Id` is managed from `radreply`, not `radcheck`.
+
+## Quick Start
 
 1. Copy `.env.example` to `.env`
-2. Fill in your MariaDB and admin credentials
+2. Fill in your MariaDB, admin, and session-source credentials
 3. Install dependencies:
    `npm install`
 4. Run development mode:
    `npm run dev`
+
+For a full installation from a fresh server, including FreeRADIUS SQL setup, follow:
+
+[`docs/instalasi-dan-setup.md`](./docs/instalasi-dan-setup.md)
 
 ## Timezone
 
@@ -46,12 +76,6 @@ APP_TIMEZONE_OFFSET_MINUTES=-480
 ```
 
 `-480` means UTC+08:00 and matches Makassar / WITA operations.
-
-## Required MariaDB tables
-
-- `radcheck`
-- `radacct`
-- `vpn_sessions` when using Huawei session mode
 
 ## Notes
 
@@ -191,3 +215,53 @@ Notes:
 - `loginTime` should ideally be ISO 8601 so the app can normalize it correctly.
 - `sessionKey` is optional. If omitted, the app derives one from session ID, CID, or connection details.
 - In Huawei mode, the dashboard and session log page read from `vpn_sessions`, not `radacct`.
+
+## Development
+
+From the project root:
+
+```bash
+npm install
+npm run dev
+```
+
+This starts:
+
+- backend Express API
+- frontend Vite dev server
+
+In development, Vite proxies `/api` requests to the backend.
+
+## Production
+
+Build the frontend:
+
+```bash
+npm run build
+```
+
+Start the backend:
+
+```bash
+npm start
+```
+
+In production, the backend serves the built frontend from `client/dist`.
+
+If you use the provided systemd unit:
+
+```bash
+sudo cp deploy/manajemen-vpn.service /etc/systemd/system/manajemen-vpn.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now manajemen-vpn
+```
+
+## Project Structure
+
+```text
+.
+|-- client/   # Vue 3 + Vite frontend
+|-- server/   # Express API and Huawei/RADIUS services
+|-- docs/     # project documentation
+|-- deploy/   # deployment examples
+```
