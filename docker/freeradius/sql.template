@@ -1,0 +1,36 @@
+sql {
+	driver = "rlm_sql_mysql"
+	dialect = "mysql"
+
+	server = "${DB_HOST}"
+	port = ${DB_PORT}
+	login = "${DB_USER}"
+	password = "${DB_PASSWORD}"
+	radius_db = "${DB_NAME}"
+
+	read_clients = yes
+
+	delete_stale_sessions = yes
+
+	mysql {
+		tls {
+		}
+	}
+
+	pool {
+		start = 1
+		min = 1
+		max = 8
+		spare = 1
+		uses = 0
+		retry_delay = 5
+		lifetime = 0
+		idle_timeout = 60
+	}
+
+	client_table = "nas"
+
+	group_attribute = "${.:instance}-Group"
+	$INCLUDE ${modconfdir}/sql/main/${dialect}/queries.conf
+}
+

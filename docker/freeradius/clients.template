@@ -1,0 +1,12 @@
+client localhost {
+	ipaddr = 127.0.0.1
+	secret = testing123
+	shortname = localhost
+}
+
+client docker-demo {
+	ipaddr = ${RADIUS_CLIENT_IPADDR}
+	secret = ${RADIUS_CLIENT_SECRET}
+	shortname = ${RADIUS_CLIENT_SHORTNAME}
+}
+

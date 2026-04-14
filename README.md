@@ -67,6 +67,53 @@ For a full installation from a fresh server, including FreeRADIUS SQL setup, fol
 
 [`docs/instalasi-dan-setup.md`](./docs/instalasi-dan-setup.md)
 
+## Quick Start with Docker
+
+If you want a self-contained demo stack, this repository also includes:
+
+- application container
+- MariaDB container
+- FreeRADIUS container
+- initial SQL schema and demo data
+
+Run:
+
+```bash
+docker compose up --build
+```
+
+After startup:
+
+- web app: `http://localhost:3010`
+- admin login: `admin`
+- admin password: `admin123`
+- demo RADIUS user: `demo.user`
+- demo RADIUS password: `demo12345`
+
+Notes:
+
+- the Docker demo uses `SESSION_SOURCE=radius` by default
+- the MariaDB and FreeRADIUS services are intended for local/demo usage
+- `vpn_sessions` will still be created automatically if you later switch the app to Huawei mode
+
+To test the demo RADIUS user from inside the stack:
+
+```bash
+docker compose exec freeradius radtest demo.user demo12345 127.0.0.1 0 testing123
+```
+
+To stop the stack:
+
+```bash
+docker compose down
+```
+
+To remove the demo database volume too:
+
+```bash
+docker compose down -v
+```
+
 ## Timezone
 
 Set the operational timezone offset for date-based filtering:
@@ -261,6 +308,7 @@ sudo systemctl enable --now manajemen-vpn
 ```text
 .
 |-- client/   # Vue 3 + Vite frontend
+|-- docker/   # Docker support files
 |-- server/   # Express API and Huawei/RADIUS services
 |-- docs/     # project documentation
 |-- deploy/   # deployment examples

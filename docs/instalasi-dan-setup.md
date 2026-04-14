@@ -42,6 +42,41 @@ sudo apt install -y mariadb-server freeradius freeradius-mysql nodejs npm
 
 Jika Node.js dari repo distro terlalu lama, gunakan repository Node.js yang sesuai kebutuhan deployment Anda.
 
+## 3A. Alternatif Cepat dengan Docker
+
+Jika tujuan Anda hanya ingin mencoba aplikasi tanpa setup manual FreeRADIUS dan MariaDB satu per satu, gunakan stack Docker bawaan repository ini:
+
+```bash
+docker compose up --build
+```
+
+Service yang akan menyala:
+
+- `app`
+- `mariadb`
+- `freeradius`
+
+Default akses demo:
+
+- web app: `http://localhost:3010`
+- admin username: `admin`
+- admin password: `admin123`
+- demo RADIUS user: `demo.user`
+- demo RADIUS password: `demo12345`
+
+Verifikasi RADIUS demo:
+
+```bash
+docker compose exec freeradius radtest demo.user demo12345 127.0.0.1 0 testing123
+```
+
+Catatan:
+
+- mode Docker default memakai `SESSION_SOURCE=radius`
+- schema SQL awal dibuat otomatis oleh container MariaDB
+- stack ini cocok untuk demo, onboarding, dan pengembangan lokal
+- untuk deployment production, tetap lebih baik meninjau kredensial, secret, network, dan volume persistence secara eksplisit
+
 ## 4. Buat Database RADIUS
 
 Masuk ke MariaDB:
